@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django import forms
 from bs4 import BeautifulSoup
 import requests
+from django.contrib import messages
 
 # Create your views here.
 def home_view(request):
@@ -58,3 +59,13 @@ def post_create_view(request):
             return redirect('home')
     
     return render(request, 'posts/post_create.html', {'form': form})
+
+def post_delete_view(request, pk):
+    post = Post.objects.get(id=pk)   
+    
+    if request.method == 'POST':
+         post.delete()
+         messages.success(request, 'Post deleted')
+         return redirect('home')
+    
+    return render(request, 'posts/post_delete.html', {'post': post})
