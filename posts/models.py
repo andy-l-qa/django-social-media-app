@@ -19,6 +19,7 @@ class Post(models.Model):
         ordering = ['-created']
     
 class Tag(models.Model):
+    image = models.FileField(upload_to='icons/', null=True, blank=True)
     name = models.CharField(max_length=20)
     slug = models.SlugField(max_length=20, unique=True)
     order = models.IntegerField(null=True)
