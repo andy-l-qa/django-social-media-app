@@ -6,15 +6,36 @@ from django.contrib import messages
 from .forms import *
 
 # Create your views here.
-def home_view(request):
+# def home_view(request):
     # print('hello') # for debugging
     # print(request)
     # print(request.META)
     # print('Request method:', request.method)
     
-    posts = Post.objects.all()
+    # posts = Post.objects.all()
     
-    return render(request, 'posts/home.html', {'posts': posts})
+    # return render(request, 'posts/home.html', {'posts': posts})
+
+# def category_view(request, tag):
+#     posts = Post.objects.filter(tags__slug = tag)
+#     return render(request, 'posts/home.html', {'posts': posts})
+
+def home_view(request, tag=None):
+    if tag:
+        posts = Post.objects.filter(tags__slug = tag)  
+        tag = get_object_or_404(Tag, slug=tag)
+    else:
+        posts = Post.objects.all()
+        
+    categories = Tag.objects.all()
+    
+    context = {
+        'posts': posts,
+        'categories': categories,
+        'tag': tag
+    }
+    
+    return render(request, 'posts/home.html', context)             
 
 def post_create_view(request):
     form = PostCreateForm()
@@ -39,6 +60,7 @@ def post_create_view(request):
             post.artist = artist
             
             post.save()
+            form.save_m2m() # This is needed to save tags to the many2 many through table
             return redirect('home')
     
     return render(request, 'posts/post_create.html', {'form': form})
@@ -62,7 +84,7 @@ def post_edit_view(request, pk):
     if request.method == 'POST':
         form = PostEditForm(request.POST, instance=post)
         if form.is_valid():
-            post.save()
+            form.save()
             messages.success(request, 'Post updated')
             return redirect('home')
     

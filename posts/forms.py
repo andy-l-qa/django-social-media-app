@@ -8,25 +8,31 @@ class PostCreateForm(ModelForm):
         # fields = '__all__'
         fields = [
             'url',
-            'body'
+            'body',
+            'tags'
         ]
         labels = {
             'body': 'Caption', 
+            'tags': 'Category'
         }
         widgets = {
             'body': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add a caption ...', 'class': 'font1 text-4xl'}),
             'url': forms.TextInput(attrs={'placeholder': 'Add url ...'}),
+            'tags': forms.CheckboxSelectMultiple(),
         }
         
 class PostEditForm(ModelForm):
     class Meta:
         model = Post
         fields = [
-            'body'
+            'body',
+            'tags'
         ]
         labels = {
-            'body': '', 
+            'body': '',
+            'tags': 'Category' 
         }
         widgets = {
             'body': forms.Textarea(attrs={'rows': 3, 'class': 'font1 text-4xl'}),
+            'tags': forms.CheckboxSelectMultiple(),
         }
