@@ -3,3 +3,4 @@ requests
 django-allauth
 pillow
 django-cleanup
+django-htmx
