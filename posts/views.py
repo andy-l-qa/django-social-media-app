@@ -30,11 +30,11 @@ def home_view(request, tag=None):
     else:
         posts = Post.objects.all()
         
-    categories = Tag.objects.all()
+    # categories = Tag.objects.all()
     
     context = {
         'posts': posts,
-        'categories': categories,
+        # 'categories': categories,
         'tag': tag
     }
     
@@ -109,6 +109,7 @@ def post_page_view(request, pk):
     
     commentform = CommentCreateForm()
     replyform = ReplyCreateForm()
+    categories = Tag.objects.all()
     
     # if request.META.get("HTTP_HX_REQUEST"):
     if request.htmx:
@@ -122,7 +123,8 @@ def post_page_view(request, pk):
     context = {
         'post': post,
         'commentform': commentform,
-        'replyform': replyform
+        'replyform': replyform,
+        'categories': categories
     }
     
     return render(request, 'posts/post_page.html', context)

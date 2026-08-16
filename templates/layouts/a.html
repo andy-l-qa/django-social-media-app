@@ -18,7 +18,9 @@
 
     </main>
 
-    {% include 'includes/sidebar.html' %}
+    {% comment %} {% include 'includes/sidebar.html' %} {% endcomment %}
+    {% load sidebar %}
+    {% sidebar_view tag user %}
 
 </content>
 
