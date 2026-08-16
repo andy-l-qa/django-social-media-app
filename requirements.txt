@@ -1,6 +1,7 @@
-beautifulsoup4
-requests
-django-allauth
-pillow
-django-cleanup
-django-htmx
+Django==6.1
+beautifulsoup4==4.15.0
+requests==2.34.2
+django-allauth==65.19.1
+pillow==12.3.0
+django-cleanup==9.0.0
+django-htmx==1.29.0
