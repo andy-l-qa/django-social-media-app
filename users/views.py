@@ -7,6 +7,7 @@ from django.db.models import Count
 from django.http import Http404
 from django.contrib.auth.models import User
 from posts.forms import ReplyCreateForm
+from inbox.forms import InboxNewMessageForm
 from .forms import *
 
 # Create your views here.
@@ -33,9 +34,12 @@ def profile_view(request, username=None):
         return render(request, 'snippets/loop_profile_posts.html', { 'posts': posts })
             
     
+    new_message_form = InboxNewMessageForm()
+    
     context = {
         'profile': profile,
-        'posts': posts
+        'posts': posts,
+        'new_message_form': new_message_form
     }
     
     return render(request, 'users/profile.html', context)

@@ -20,31 +20,7 @@
                 <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   <div @click.away="modal_open = false" class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
 
-                        <h3 class="text-xl font-bold mb-4" id="modal-title">
-                            New Message
-                        </h3>
-                        <div id="new-message">
-                            <div class="flex gap-2 items-center">
-                                <span class="font-bold">To:</span>
-                                <input class="p-3 w-screen lg:full" placeholder="Search user ..." type="text" name="search_user">
-                            </div>
-                            <div id="search-results" class="block h-60 overflow-y-auto">
-                                <ul id="user-list" class="mt-2">
-                                    <li>
-                                        <a href="" class="flex items-center gap-1 hover:bg-zinc-100 rounded-lg p-2 cursor-pointer">
-                                            <img class="w-10 h-10 object-cover rounded-full mr-1" src="https://img.icons8.com/color/48/cookie-monster.png">
-                                            <div class="font-bold">Pete <span class="text-xs font-normal text-zinc-500">@pete</span></div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="" class="flex items-center gap-1 hover:bg-zinc-100 rounded-lg p-2 cursor-pointer">
-                                            <img class="w-10 h-10 object-cover rounded-full mr-1" src="https://img.icons8.com/color/48/cookie-monster.png">
-                                            <div class="font-bold">Pete <span class="text-xs font-normal text-zinc-500">@pete</span></div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        {% include 'inbox/form_searchuser.html' %}
                         
                   </div>
                 </div>

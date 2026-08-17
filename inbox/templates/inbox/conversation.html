@@ -71,7 +71,10 @@
         </ul>
 
         <div class="sticky bottom-0 z-1 px-4 sm:px-10 pt-6 pb-10 flex bg-white">
-            <a href="" class="flex cursor-pointer items-center gap-2 bg-gray-800 hover:bg-indigo-600 text-white rounded-full px-6 pr-8 py-3">
+            <a class="flex cursor-pointer items-center gap-2 bg-gray-800 hover:bg-indigo-600 text-white rounded-full px-6 pr-8 py-3"
+            hx-get="{% url 'inbox-newreply' conversation.id %}"
+            hx-target="this"
+            hx-swap="outerHTML scroll:#conversation:bottom" >
                 <img class="h-6" src="https://img.icons8.com/material/96/ffffff/reply-arrow--v1.png">
                 <div class="text-white rounded-full">Reply</div>
             </a>
