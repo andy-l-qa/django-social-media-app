@@ -1,9 +1,6 @@
-{% extends 'layouts/a.html' %}
-
-{% block content %}
-
+<fade-in class="opacity-0" _="on load transition my *opacity to 1 over 0.3 seconds">
 {% for post in posts %}
-    {% include 'posts/post.html' %}
+{% include 'posts/post.html' %}
 {% endfor %}
 
 <div hx-get="{% if tag %}{% url 'category' tag.slug %}{% else %}
@@ -13,5 +10,4 @@
     hx-swap="outerHTML">
     {% comment %} Loading... {% endcomment %}
 </div>
-
-{% endblock %}
+</fade-in>

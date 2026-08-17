@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import requests
 from django.contrib import messages
 from .forms import *
+from django.core.paginator import Paginator
 
 # Create your views here.
 # def home_view(request):
@@ -32,11 +33,23 @@ def home_view(request, tag=None):
         
     # categories = Tag.objects.all()
     
+    paginator = Paginator(posts, 3)
+    page = int(request.GET.get('page', 1))
+    try:
+        posts = paginator.page(page)
+    except:
+        return HttpResponse('')
+    
+    
     context = {
         'posts': posts,
         # 'categories': categories,
-        'tag': tag
+        'tag': tag,
+        'page': page
     }
+    
+    if request.htmx:
+        return render(request, 'snippets/loop_home_posts.html', context)
     
     return render(request, 'posts/home.html', context)             
 
