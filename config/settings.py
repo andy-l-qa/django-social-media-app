@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'posts',
     'users',
+    'inbox',
 ]
 
 MIDDLEWARE = [
@@ -148,4 +149,4 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
 SITE_ID = 1
 
-ACCOUNT_USERNAME_BLACKLIST = [ 'admin', 'accounts', 'profile', 'category', 'post' ]
+ACCOUNT_USERNAME_BLACKLIST = [ 'admin', 'accounts', 'profile', 'category', 'post', 'inbox' ]

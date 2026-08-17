@@ -32,6 +32,7 @@ urlpatterns = [
     path('post/<pk>/', post_page_view, name='post'),
     path('post/like/<pk>/', like_post, name="like-post"), 
     path('profile/', profile_view, name='profile'),
+    path('inbox/', include('inbox.urls')),
     path('<username>/', profile_view, name='userprofile'),
     path('profile/onboarding/', profile_edit_view, name="profile-onboarding"),
     path('profile/edit/', profile_edit_view, name='profile-edit'),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('replysent/<pk>/', reply_sent, name='reply-sent'), 
     path('reply/like/<pk>/', like_reply, name="like-reply"), 
     path('reply/delete/<pk>/', reply_delete_view, name='reply-delete'),
+    
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
