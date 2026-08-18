@@ -1,58 +1,66 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.db.models import Q
-from .models import *
 from users.models import Profile
+from cryptography.fernet import Fernet
+from django.conf import settings
 from .forms import InboxNewMessageForm
+from .models import *
 
-# Create your views here.
+f = Fernet(settings.ENCRYPT_KEY)
+
 @login_required
 def inbox_view(request, conversation_id=None):
-    
-    my_conversations = Conversation.objects.filter(participants=request.user).order_by('-lastmessage_created')
-    
-    # conversation = Conversation.objects.first()
-    
+    my_conversations = Conversation.objects.filter(participants=request.user)
     if conversation_id:
         conversation = get_object_or_404(my_conversations, id=conversation_id)
+        latest_message = conversation.messages.first()
+        if conversation.is_seen == False and latest_message.sender != request.user:
+            conversation.is_seen = True
+            conversation.save()
     else:
         conversation = None
-    
     context = {
         'conversation': conversation,
         'my_conversations': my_conversations
     }
-    
     return render(request, 'inbox/inbox.html', context)
 
+
 def search_users(request):
-    letters = request.GET.get('search_user')
-    
     if request.htmx:
+        letters = request.GET.get('search_user')
         if len(letters) > 0:
-        
-            # users = User.objects.filter(username__startswith=letters).exclude(username=request.user.username)
             profiles = Profile.objects.filter(realname__icontains=letters)
             users_id = profiles.values_list('user', flat=True)
             users = User.objects.filter(
                 Q(username__icontains=letters) | Q(id__in=users_id)
             ).exclude(username=request.user.username)
-            return render(request, 'inbox/list_searchuser.html', {'users': users})
+            return render(request, 'inbox/list_searchuser.html', { 'users' : users })
         else:
             return HttpResponse('')
     else:
-        raise Http404
+        raise Http404()
     
+
 @login_required     
 def new_message(request, recipient_id):
-    recipient = get_object_or_404(User, id=recipient_id)
+    recipient = get_object_or_404( User, id=recipient_id)
     new_message_form = InboxNewMessageForm()
     
     if request.method == 'POST':
         form = InboxNewMessageForm(request.POST)
         if form.is_valid():
             message = form.save(commit=False)
+
+            # encrypt message
+            message_original = form.cleaned_data['body']
+            message_bytes = message_original.encode('utf-8')
+            message_encrypted = f.encrypt(message_bytes)
+            message_decoded = message_encrypted.decode('utf-8')
+            message.body = message_decoded
+            
             message.sender = request.user
             
             my_conversations = request.user.conversations.all()
@@ -61,15 +69,14 @@ def new_message(request, recipient_id):
                     message.conversation = c
                     message.save()
                     c.lastmessage_created = timezone.now()
+                    c.is_seen = False
                     c.save()
                     return redirect('inbox', c.id)
-                
             new_conversation = Conversation.objects.create()
             new_conversation.participants.add(request.user, recipient)
             new_conversation.save()
             message.conversation = new_conversation
-            message.save()
-            
+            message.save() 
             return redirect('inbox', new_conversation.id)
     
     context = {
@@ -77,6 +84,7 @@ def new_message(request, recipient_id):
         'new_message_form': new_message_form
     }
     return render(request, 'inbox/form_newmessage.html', context)
+
 
 @login_required
 def new_reply(request, conversation_id):
@@ -88,10 +96,32 @@ def new_reply(request, conversation_id):
         form = InboxNewMessageForm(request.POST)
         if form.is_valid():
             message = form.save(commit=False)
+
+            # encrypt message
+            message_original = form.cleaned_data['body']
+            message_bytes = message_original.encode('utf-8')
+            message_encrypted = f.encrypt(message_bytes)
+            message_decoded = message_encrypted.decode('utf-8')
+            message.body = message_decoded
+            
+            # print('message_original:', message_original)
+            # print('message_bytes:', message_bytes)
+            # print('message_encrypted:', message_encrypted)
+            # print('message_decoded:', message_decoded)
+            
+           
+            
+            # message_decrypted = f.decrypt(message_decoded)
+            # message_decoded = message_decrypted.decode('utf-8')
+            
+            # print('message_decrypted:', message_decrypted)
+            # print('message_decoded:', message_decoded)
+            
             message.sender = request.user
             message.conversation = conversation
             message.save()
             conversation.lastmessage_created = timezone.now()
+            conversation.is_seen = False
             conversation.save()
             return redirect('inbox', conversation.id)
     
@@ -100,3 +130,26 @@ def new_reply(request, conversation_id):
         'conversation' : conversation
     }
     return render(request, 'inbox/form_newreply.html', context)
+
+
+
+def notify_newmessage(request, conversation_id):
+    conversation = get_object_or_404(Conversation, id=conversation_id)
+    latest_message = conversation.messages.first()
+    if conversation.is_seen == False and latest_message.sender != request.user:
+        return render(request, 'inbox/notify_icon.html')
+    else:
+        return HttpResponse('') 
+    
+    
+def notify_inbox(request):
+    my_conversations = Conversation.objects.filter(participants=request.user, is_seen=False)
+    for c in my_conversations:
+        latest_message = c.messages.first()
+        if latest_message.sender != request.user:
+            return render(request, 'inbox/notify_icon.html')
+    return HttpResponse('') 
+
+
+
+
